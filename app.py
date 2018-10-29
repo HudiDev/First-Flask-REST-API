@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_restful import Api
 from flask_jwt import JWT
@@ -10,12 +12,18 @@ from resources.store import Store, StoreList
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.secret_key = 'Shmuel'
 
 api = Api(app)
+
+#The following function is applicable only in development mode. 
+#In production on heroku systems 
+# @app.before_first_request
+# def create_tables():
+# 	db.create_all()
    
 jwt = JWT(app, authenticate, identity) #/auth
 app.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=3600)
